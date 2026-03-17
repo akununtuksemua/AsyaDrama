@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -17,18 +17,32 @@ async function load() {
   let res = await fetch(`https://melolo-api-azure.vercel.app/api/melolo/detail/${id}`);
   let json = await res.json();
 
-  document.getElementById("title").innerText = json.data.title;
+  console.log(json); // DEBUG
+
+  let data = json.data;
+
+  document.getElementById("title").innerText = data.title;
 
   let html = "";
-  json.data.episodes.forEach(ep => {
-    html += `<button onclick="play('${ep.vid_id}')">Episode ${ep.episode}</button>`;
+
+  let eps = data.episodes || data.chapter_list || [];
+
+  eps.forEach(ep => {
+    let vid = ep.vid_id || ep.video_id;
+    let num = ep.episode || ep.number || "?";
+
+    html += `
+      <button onclick="play('${vid}')">
+        Episode ${num}
+      </button>
+    `;
   });
 
   document.getElementById("episodes").innerHTML = html;
 }
 
 function play(v) {
-  location.href = "player.html?vid=" + v;
+  window.location.href = "player.html?vid=" + v;
 }
 
 load();
