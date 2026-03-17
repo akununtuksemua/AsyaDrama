@@ -1,37 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Melolo</title>
+  <title>Melolo Premium</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Trending</h2>
-<div id="list"></div>
+<div class="header">
+  <div class="logo">?? Melolo</div>
+  <input class="search" placeholder="Search..." onkeyup="search(this.value)">
+</div>
 
-<script>
-async function loadTrending() {
-  let res = await fetch("https://melolo-api-azure.vercel.app/api/melolo/trending");
-  let json = await res.json();
+<div class="container">
+  <h2>Trending</h2>
+  <div class="grid" id="list"></div>
+</div>
 
-  let html = "";
-  json.data.forEach(item => {
-    html += `
-      <div onclick="openDetail('${item.book_id}')">
-        <img src="${item.cover}" width="120">
-        <p>${item.title}</p>
-      </div>
-    `;
-  });
-
-  document.getElementById("list").innerHTML = html;
-}
-
-function openDetail(id) {
-  window.location = "detail.html?id=" + id;
-}
-
-loadTrending();
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>

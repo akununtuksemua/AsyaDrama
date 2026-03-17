@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Detail</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2 id="title"></h2>
-<div id="episodes"></div>
+<div class="container">
+  <h2 id="title"></h2>
+  <div id="episodes"></div>
+</div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+const id = new URLSearchParams(location.search).get("id");
 
-async function loadDetail() {
+async function load() {
   let res = await fetch(`https://melolo-api-azure.vercel.app/api/melolo/detail/${id}`);
   let json = await res.json();
 
@@ -20,21 +21,17 @@ async function loadDetail() {
 
   let html = "";
   json.data.episodes.forEach(ep => {
-    html += `
-      <button onclick="play('${ep.vid_id}')">
-        Episode ${ep.episode}
-      </button><br>
-    `;
+    html += `<button onclick="play('${ep.vid_id}')">Episode ${ep.episode}</button>`;
   });
 
   document.getElementById("episodes").innerHTML = html;
 }
 
-function play(vid) {
-  window.location = "player.html?vid=" + vid;
+function play(v) {
+  location.href = "player.html?vid=" + v;
 }
 
-loadDetail();
+load();
 </script>
 
 </body>

@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Player</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<video id="video" controls width="100%"></video>
+<video id="video" controls autoplay style="width:100%; height:100vh;"></video>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const vid = params.get("vid");
+const vid = new URLSearchParams(location.search).get("vid");
 
-async function loadVideo() {
+async function load() {
   let res = await fetch(`https://melolo-api-azure.vercel.app/api/melolo/stream/${vid}`);
   let json = await res.json();
 
-  let videoUrl = json.data.url; // biasanya m3u8
-
+  let url = json.data.url;
   let video = document.getElementById("video");
 
   if (Hls.isSupported()) {
     let hls = new Hls();
-    hls.loadSource(videoUrl);
+    hls.loadSource(url);
     hls.attachMedia(video);
   } else {
-    video.src = videoUrl;
+    video.src = url;
   }
+
+  // AUTO NEXT (basic)
+  video.onended = () => alert("Next Episode Coming Soon ??");
 }
 
-loadVideo();
+load();
 </script>
 
 </body>
