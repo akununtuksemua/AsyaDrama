@@ -1,49 +1,28 @@
 let allData = [];
 
-// 🔥 FETCH FIX CORS + FLEXIBLE
+// ✅ FETCH API (SUDAH SESUAI MELOLO + CORS FIX)
 async function fetchAPI(url) {
     try {
         let proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
 
         let res = await fetch(proxy);
-        let text = await res.text();
-
-        let data;
-        try {
-            data = JSON.parse(text);
-        } catch {
-            console.log("NOT JSON:", text);
-            return [];
-        }
+        let data = await res.json();
 
         console.log("API:", data);
 
-        return data.result || data.data || data;
+        return data.data || []; // 🔥 FIX UTAMA
     } catch (e) {
-        console.log("FETCH ERROR:", e);
+        console.log("ERROR:", e);
         return [];
     }
 }
 
-// 🔥 AMBIL FIELD OTOMATIS (ANTI ERROR)
-function getImage(item) {
-    return item.thumbnail || item.image || item.cover || "";
-}
-
-function getVideo(item) {
-    return item.video || item.url || item.link || "";
-}
-
-function getTitle(item) {
-    return item.title || item.name || "No Title";
-}
-
-// 🎬 RENDER
+// ✅ RENDER
 function render(id, data) {
     let container = document.getElementById(id);
     container.innerHTML = "";
 
-    if (!data || data.length === 0) {
+    if (!data.length) {
         container.innerHTML = "<p>Data kosong</p>";
         return;
     }
@@ -53,12 +32,12 @@ function render(id, data) {
         div.className = "card";
 
         div.innerHTML = `
-            <img src="${getImage(item)}">
-            <p>${getTitle(item)}</p>
+            <img src="${item.thumbnail}">
+            <p>${item.title}</p>
         `;
 
         div.onclick = () => {
-            localStorage.setItem("video", getVideo(item));
+            localStorage.setItem("video", item.url);
             window.location = "player.html";
         };
 
@@ -66,10 +45,10 @@ function render(id, data) {
     });
 }
 
-// 🔍 SEARCH
+// 🔎 SEARCH
 function search(q) {
     let res = allData.filter(x =>
-        getTitle(x).toLowerCase().includes(q.toLowerCase())
+        (x.title || "").toLowerCase().includes(q.toLowerCase())
     );
     render("search", res);
 }
