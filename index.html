@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Melolo Viewer</title>
 <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #eee; margin: 0; padding: 0; }
-    header { background: #1f1f1f; padding: 15px 30px; text-align: center; font-size: 24px; font-weight: bold; color: #fff; }
-    .tabs { display: flex; justify-content: center; margin: 20px 0; }
-    .tab { padding: 10px 20px; margin: 0 5px; background: #2a2a2a; cursor: pointer; border-radius: 5px; transition: 0.3s; }
-    .tab.active { background: #ff5722; color: #fff; font-weight: bold; }
-    .book-list { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 0 20px; }
-    .book { background: #1f1f1f; width: 180px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
-    .book:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.7); }
-    .book img { width: 100%; height: 220px; object-fit: cover; }
-    .book-info { padding: 10px; }
-    .book-title { font-weight: bold; margin: 5px 0; font-size: 14px; }
-    .book-id { font-size: 12px; color: #aaa; }
-    #episode-list { margin: 20px; padding: 20px; background: #1f1f1f; border-radius: 8px; display: none; }
-    #episode-list h3 { margin-top: 0; }
-    #episode-list ul { list-style: none; padding: 0; }
-    #episode-list li { padding: 8px 10px; margin: 5px 0; background: #2a2a2a; border-radius: 5px; cursor: pointer; transition: 0.2s; }
-    #episode-list li:hover { background: #ff5722; }
-    video { width: 100%; max-width: 640px; margin-top: 15px; border-radius: 8px; display: none; }
+body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #eee; margin: 0; padding: 0; }
+header { background: #1f1f1f; padding: 15px 30px; text-align: center; font-size: 24px; font-weight: bold; color: #fff; }
+.tabs { display: flex; justify-content: center; margin: 20px 0; }
+.tab { padding: 10px 20px; margin: 0 5px; background: #2a2a2a; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+.tab.active { background: #ff5722; color: #fff; font-weight: bold; }
+.book-list { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 0 20px; }
+.book { background: #1f1f1f; width: 180px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+.book:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.7); }
+.book img { width: 100%; height: 220px; object-fit: cover; }
+.book-info { padding: 10px; }
+.book-title { font-weight: bold; margin: 5px 0; font-size: 14px; }
+.book-id { font-size: 12px; color: #aaa; }
+#episode-list { margin: 20px; padding: 20px; background: #1f1f1f; border-radius: 8px; display: none; }
+#episode-list h3 { margin-top: 0; }
+#episode-list ul { list-style: none; padding: 0; }
+#episode-list li { padding: 8px 10px; margin: 5px 0; background: #2a2a2a; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+#episode-list li:hover { background: #ff5722; }
+video { width: 100%; max-width: 640px; margin-top: 15px; border-radius: 8px; display: none; }
 </style>
 </head>
 <body>
@@ -44,9 +44,8 @@
 </div>
 
 <script>
-const apiBase = 'https://melolo-api-azure.vercel.app/api/melolo';
+const apiBase = 'https://your-server-domain.com/api'; // ganti dengan server Node.js kamu
 
-// ================= FETCH API =================
 async function fetchAPI(url) {
     try {
         const res = await fetch(url);
@@ -57,7 +56,6 @@ async function fetchAPI(url) {
     }
 }
 
-// ================= RENDER BOOKS =================
 function renderBooks(containerId, books) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
@@ -76,7 +74,6 @@ function renderBooks(containerId, books) {
     });
 }
 
-// ================= SHOW EPISODES =================
 async function showEpisodes(book) {
     const episodeList = document.getElementById('episode-list');
     const episodesUl = document.getElementById('episodes');
@@ -87,7 +84,7 @@ async function showEpisodes(book) {
     player.src = '';
     document.getElementById('book-title').innerText = `Episodes: ${book.book_name}`;
 
-    const data = await fetchAPI(`${apiBase}/detail/${book.book_id}`);
+    const data = await fetchAPI(`${apiBase}/trending/detail/${book.book_id}`.replace('trending', 'trending')); // bisa trending/latest sama
     const eps = data?.data?.video_data?.video_list || [];
 
     episodesUl.innerHTML = '';
@@ -109,7 +106,6 @@ async function showEpisodes(book) {
     });
 }
 
-// ================= LOAD TRENDING & LATEST =================
 async function loadTrending() {
     const data = await fetchAPI(`${apiBase}/trending`);
     renderBooks('trendingList', data.books || []);
@@ -120,7 +116,7 @@ async function loadLatest() {
     renderBooks('latestList', data.books || []);
 }
 
-// ================= TAB SWITCH =================
+// Tab switch
 document.getElementById('tabTrending').addEventListener('click', () => {
     document.getElementById('tabTrending').classList.add('active');
     document.getElementById('tabLatest').classList.remove('active');
@@ -135,7 +131,7 @@ document.getElementById('tabLatest').addEventListener('click', () => {
     document.getElementById('latestList').style.display = 'flex';
 });
 
-// ================= INIT =================
+// Init
 window.addEventListener('DOMContentLoaded', async () => {
     await loadTrending();
     await loadLatest();
