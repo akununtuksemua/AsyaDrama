@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<head></head>
+<body style="margin:0;background:black;">
 
-<video id="video" controls autoplay style="width:100%; height:100vh;"></video>
+<video id="video" controls autoplay style="width:100%;height:100vh;"></video>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
@@ -16,8 +14,16 @@ async function load() {
   let res = await fetch(`https://melolo-api-azure.vercel.app/api/melolo/stream/${vid}`);
   let json = await res.json();
 
-  let url = json.data.url;
+  console.log(json); // DEBUG
+
+  let url = json.data.url || json.url;
+
   let video = document.getElementById("video");
+
+  if (!url) {
+    alert("Video tidak ditemukan!");
+    return;
+  }
 
   if (Hls.isSupported()) {
     let hls = new Hls();
@@ -26,9 +32,6 @@ async function load() {
   } else {
     video.src = url;
   }
-
-  // AUTO NEXT (basic)
-  video.onended = () => alert("Next Episode Coming Soon ??");
 }
 
 load();
