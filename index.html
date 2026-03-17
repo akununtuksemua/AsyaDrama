@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Melolo Viewer</title>
+<style>
+    body { font-family: 'Segoe UI', sans-serif; background: #121212; color: #eee; margin: 0; padding: 0; }
+    header { background: #1f1f1f; padding: 15px 30px; text-align: center; font-size: 24px; font-weight: bold; color: #fff; }
+    .tabs { display: flex; justify-content: center; margin: 20px 0; }
+    .tab { padding: 10px 20px; margin: 0 5px; background: #2a2a2a; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+    .tab.active { background: #ff5722; color: #fff; font-weight: bold; }
+    .book-list { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 0 20px; }
+    .book { background: #1f1f1f; width: 180px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.5); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+    .book:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.7); }
+    .book img { width: 100%; height: 220px; object-fit: cover; }
+    .book-info { padding: 10px; }
+    .book-title { font-weight: bold; margin: 5px 0; font-size: 14px; }
+    .book-id { font-size: 12px; color: #aaa; }
+    #episode-list { margin: 20px; padding: 20px; background: #1f1f1f; border-radius: 8px; display: none; }
+    #episode-list h3 { margin-top: 0; }
+    #episode-list ul { list-style: none; padding: 0; }
+    #episode-list li { padding: 8px 10px; margin: 5px 0; background: #2a2a2a; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+    #episode-list li:hover { background: #ff5722; }
+    video { width: 100%; max-width: 640px; margin-top: 15px; border-radius: 8px; display: none; }
+</style>
+</head>
+<body>
+
+<header>Melolo Viewer</header>
+
+<div class="tabs">
+    <div class="tab active" id="tabTrending">Trending</div>
+    <div class="tab" id="tabLatest">Latest</div>
+</div>
+
+<div id="trendingList" class="book-list"></div>
+<div id="latestList" class="book-list" style="display:none;"></div>
+
+<div id="episode-list">
+    <h3 id="book-title">Episodes</h3>
+    <ul id="episodes"></ul>
+    <video id="player" controls></video>
+</div>
+
+<script>
+const apiBase = 'https://melolo-api-azure.vercel.app/api/melolo';
+
+// ================= FETCH API =================
+async function fetchAPI(url) {
+    try {
+        const res = await fetch(url);
+        return await res.json();
+    } catch(err) {
+        console.error('API Error:', url, err);
+        return { books: [] };
+    }
+}
+
+// ================= RENDER BOOKS =================
+function renderBooks(containerId, books) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    books.forEach(book => {
+        const div = document.createElement('div');
+        div.className = 'book';
+        div.innerHTML = `
+            <img src="${book.thumb_url || book.cover || book.thumbnail}" alt="${book.book_name}">
+            <div class="book-info">
+                <div class="book-title">${book.book_name}</div>
+                <div class="book-id">ID: ${book.book_id}</div>
+            </div>
+        `;
+        div.addEventListener('click', () => showEpisodes(book));
+        container.appendChild(div);
+    });
+}
+
+// ================= SHOW EPISODES =================
+async function showEpisodes(book) {
+    const episodeList = document.getElementById('episode-list');
+    const episodesUl = document.getElementById('episodes');
+    const player = document.getElementById('player');
+
+    episodeList.style.display = 'block';
+    player.style.display = 'none';
+    player.src = '';
+    document.getElementById('book-title').innerText = `Episodes: ${book.book_name}`;
+
+    const data = await fetchAPI(`${apiBase}/detail/${book.book_id}`);
+    const eps = data?.data?.video_data?.video_list || [];
+
+    episodesUl.innerHTML = '';
+    eps.forEach((ep, i) => {
+        const li = document.createElement('li');
+        li.textContent = `EP ${i+1} - ${ep.title || ep.vid}`;
+        li.addEventListener('click', async () => {
+            const streamData = await fetchAPI(`${apiBase}/stream/${ep.vid}`);
+            const url = streamData?.data?.main_url || streamData?.data?.backup_url;
+            if(url){
+                player.src = url;
+                player.style.display = 'block';
+                player.play();
+            } else {
+                alert('Stream tidak ditemukan!');
+            }
+        });
+        episodesUl.appendChild(li);
+    });
+}
+
+// ================= LOAD TRENDING & LATEST =================
+async function loadTrending() {
+    const data = await fetchAPI(`${apiBase}/trending`);
+    renderBooks('trendingList', data.books || []);
+}
+
+async function loadLatest() {
+    const data = await fetchAPI(`${apiBase}/latest`);
+    renderBooks('latestList', data.books || []);
+}
+
+// ================= TAB SWITCH =================
+document.getElementById('tabTrending').addEventListener('click', () => {
+    document.getElementById('tabTrending').classList.add('active');
+    document.getElementById('tabLatest').classList.remove('active');
+    document.getElementById('trendingList').style.display = 'flex';
+    document.getElementById('latestList').style.display = 'none';
+});
+
+document.getElementById('tabLatest').addEventListener('click', () => {
+    document.getElementById('tabLatest').classList.add('active');
+    document.getElementById('tabTrending').classList.remove('active');
+    document.getElementById('trendingList').style.display = 'none';
+    document.getElementById('latestList').style.display = 'flex';
+});
+
+// ================= INIT =================
+window.addEventListener('DOMContentLoaded', async () => {
+    await loadTrending();
+    await loadLatest();
+});
+</script>
+
+</body>
+</html>
