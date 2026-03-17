@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SekaiDrama Clone</title>
+    <title>SekaiDrama Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
     <div class="logo">? SekaiDrama</div>
-    <div>??</div>
+    <input class="search" placeholder="Search..." onkeyup="search(this.value)">
 </div>
 
-<!-- CATEGORY -->
-<div class="categories">
-    <div class="cat">DramaBox</div>
-    <div class="cat">ReelShort</div>
-    <div class="cat">ShortMax</div>
-    <div class="cat active">NetShort</div>
-    <div class="cat">Melolo</div>
-</div>
-
-<!-- SECTION -->
 <div class="section">
-    <h2>Rekomendasi Untukmu</h2>
+    <h2>?? Trending</h2>
+    <div id="trending" class="scroll"></div>
+</div>
 
-    <div id="list" class="scroll"></div>
+<div class="section">
+    <h2>?? Latest</h2>
+    <div id="latest" class="scroll"></div>
+</div>
+
+<div class="section">
+    <h2>?? Search Result</h2>
+    <div id="search" class="grid"></div>
 </div>
 
 <script src="script.js"></script>

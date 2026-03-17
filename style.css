@@ -1,59 +1,40 @@
 body {
     margin: 0;
-    background: linear-gradient(to bottom, #0f0f1a, #0a0a12);
-    font-family: Arial;
+    background: linear-gradient(to bottom, #0f0f1a, #050508);
     color: white;
+    font-family: Arial;
 }
 
-/* NAVBAR */
 .navbar {
     display: flex;
     justify-content: space-between;
-    padding: 15px 20px;
-    align-items: center;
+    padding: 15px;
 }
 
 .logo {
-    font-size: 20px;
+    color: #ff4df0;
     font-weight: bold;
-    color: #ff5cf0;
 }
 
-/* CATEGORY */
-.categories {
-    display: flex;
-    gap: 10px;
-    padding: 10px 20px;
-    overflow-x: auto;
-}
-
-.cat {
-    background: #1a1a2e;
-    padding: 8px 15px;
+.search {
+    padding: 8px;
     border-radius: 20px;
-    cursor: pointer;
+    border: none;
 }
 
-.cat.active {
-    border: 2px solid #ff5cf0;
-}
-
-/* SECTION */
 .section {
-    padding: 20px;
+    padding: 15px;
 }
 
-/* SCROLL LIST */
 .scroll {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     overflow-x: auto;
 }
 
-/* CARD */
 .card {
-    min-width: 150px;
-    position: relative;
+    min-width: 140px;
+    cursor: pointer;
 }
 
 .card img {
@@ -61,23 +42,14 @@ body {
     border-radius: 10px;
 }
 
-/* BADGE */
-.badge {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background: red;
-    font-size: 10px;
-    padding: 3px 6px;
-    border-radius: 5px;
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+    gap: 15px;
 }
 
-.views {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0,0,0,0.7);
-    font-size: 10px;
-    padding: 3px 6px;
-    border-radius: 5px;
+@media (max-width:600px) {
+    .card {
+        min-width: 110px;
+    }
 }
