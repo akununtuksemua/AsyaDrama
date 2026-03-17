@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Detail</title>
+</head>
+<body>
+
+<h2 id="title"></h2>
+<div id="episodes"></div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+async function loadDetail() {
+  let res = await fetch(`https://melolo-api-azure.vercel.app/api/melolo/detail/${id}`);
+  let json = await res.json();
+
+  document.getElementById("title").innerText = json.data.title;
+
+  let html = "";
+  json.data.episodes.forEach(ep => {
+    html += `
+      <button onclick="play('${ep.vid_id}')">
+        Episode ${ep.episode}
+      </button><br>
+    `;
+  });
+
+  document.getElementById("episodes").innerHTML = html;
+}
+
+function play(vid) {
+  window.location = "player.html?vid=" + vid;
+}
+
+loadDetail();
+</script>
+
+</body>
+</html>

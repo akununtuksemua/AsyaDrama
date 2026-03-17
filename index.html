@@ -1,33 +1,37 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SekaiDrama Clone</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <title>Melolo</title>
 </head>
 <body>
 
-<div class="container">
+<h2>Trending</h2>
+<div id="list"></div>
 
-    <!-- SEARCH -->
-    <input type="text" id="search" placeholder="Cari drama...">
+<script>
+async function loadTrending() {
+  let res = await fetch("https://melolo-api-azure.vercel.app/api/melolo/trending");
+  let json = await res.json();
 
-    <!-- TITLE -->
-    <div class="title" id="title">Loading...</div>
+  let html = "";
+  json.data.forEach(item => {
+    html += `
+      <div onclick="openDetail('${item.book_id}')">
+        <img src="${item.cover}" width="120">
+        <p>${item.title}</p>
+      </div>
+    `;
+  });
 
-    <!-- VIDEO PLAYER -->
-    <div class="player">
-        <video id="video" controls></video>
-    </div>
+  document.getElementById("list").innerHTML = html;
+}
 
-    <!-- EPISODES -->
-    <div class="episodes" id="episodes"></div>
+function openDetail(id) {
+  window.location = "detail.html?id=" + id;
+}
 
-</div>
+loadTrending();
+</script>
 
-<script src="app.js"></script>
 </body>
 </html>

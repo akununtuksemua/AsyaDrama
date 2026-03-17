@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Player</title>
+</head>
+<body>
+
+<video id="video" controls width="100%"></video>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const vid = params.get("vid");
+
+async function loadVideo() {
+  let res = await fetch(`https://melolo-api-azure.vercel.app/api/melolo/stream/${vid}`);
+  let json = await res.json();
+
+  let videoUrl = json.data.url; // biasanya m3u8
+
+  let video = document.getElementById("video");
+
+  if (Hls.isSupported()) {
+    let hls = new Hls();
+    hls.loadSource(videoUrl);
+    hls.attachMedia(video);
+  } else {
+    video.src = videoUrl;
+  }
+}
+
+loadVideo();
+</script>
+
+</body>
+</html>
